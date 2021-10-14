@@ -1,0 +1,75 @@
+---
+global:
+
+route:
+  # グルーピングするラベルを指定する
+  group_by:
+    - alertname
+    - instance
+  # アラートを受信してから送信を行うまでの待ち時間を指定する
+  # default = 30s
+  group_wait: 30s
+  # アラートの送信後、同一のグループに属するアラートを再び送信できるようにするまでの時間を指定する
+  # default = 5m
+  group_interval: 1m
+  # アラートを送信後、まったく同じアラートを再び送信できるようにするまでの時間を指定する
+  # default = 4h
+  repeat_interval: 4h
+  # A default receiver
+  receiver: 'slack-alert'
+  routes:
+    - match:
+        severity: 'info'
+      receiver: 'slack-info'
+    - match:
+        severity: 'warning'
+      receiver: 'slack-info'
+    - match:
+        severity: 'error'
+      receiver: 'slack-alert'
+    - match:
+        severity: 'critical'
+      receiver: 'slack-alert'
+templates:
+  - 'templates/*.tmpl'
+
+receivers:
+  - name: 'slack-info'
+    slack_configs:
+      - api_url: 'https://hooks.slack.com/services/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'
+        channel: '#sandbox'
+        title: '{{ template "slack.title" . }}'
+        title_link: '{{ template "slack.default.titlelink" . }}'
+        username: 'Alertmanager'
+        color: '{{ template "slack.color" . }}'
+        text: ''
+        fallback: '{{ template "slack.default.fallback" . }}'
+        footer: 'Prometheus Alertmanager'
+        fields:
+          - title: 'Alert level'
+            value: '{{ .CommonAnnotations.alert_level }}'
+          - title: 'Summary'
+            value: '{{ template "slack.summary" . }}'
+          - title: 'Description'
+            value: '{{ template "slack.description" . }}'
+        send_resolved: true
+
+  - name: 'slack-alert'
+    slack_configs:
+      - api_url: 'https://hooks.slack.com/services/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'
+        channel: '#sandbox'
+        title: '{{ template "slack.title" . }}'
+        title_link: '{{ template "slack.default.titlelink" . }}'
+        username: 'Alertmanager'
+        color: '{{ template "slack.color" . }}'
+        text: ''
+        fallback: '{{ template "slack.default.fallback" . }}'
+        footer: 'Prometheus Alertmanager'
+        fields:
+          - title: 'Alert level'
+            value: '{{ .CommonAnnotations.alert_level }}'
+          - title: 'Summary'
+            value: '{{ template "slack.summary" . }}'
+          - title: 'Description'
+            value: '{{ template "slack.description" . }}'
+        send_resolved: true

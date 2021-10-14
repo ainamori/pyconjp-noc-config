@@ -1,0 +1,70 @@
+modules:
+  # Default IF-MIB interfaces table with ifIndex.
+  if_mib:
+    walk: 
+      - sysUpTime
+      - interfaces
+      - ifXTable
+    auth:
+      community: fromPyCon
+    lookups:
+      - source_indexes: [ifIndex]
+        lookup: ifAlias
+      - source_indexes: [ifIndex]
+        lookup: ifDescr
+      - source_indexes: [ifIndex]
+        # Use OID to avoid conflict with Netscaler NS-ROOT-MIB.
+        lookup: 1.3.6.1.2.1.31.1.1.1.1 # ifName
+    overrides:
+      ifAlias:
+        ignore: true # Lookup metric
+      ifDescr:
+        ignore: true # Lookup metric
+      ifName:
+        ignore: true # Lookup metric
+      ifType:
+        type: EnumAsInfo
+
+# Cisco S/W
+  cisco:
+    walk:
+      - interfaces
+      - ifXTable
+    auth:
+      community: fromPyCon
+    lookups:
+      - source_indexes: [ifIndex]
+        lookup: ifAlias
+      - source_indexes: [ifIndex]
+        lookup: ifDescr
+      - source_indexes: [ifIndex]
+        # Use OID to avoid conflict with Netscaler NS-ROOT-MIB.
+        lookup: 1.3.6.1.2.1.31.1.1.1.1 # ifName
+# NEC IX Router
+#
+# https://jpn.nec.com/univerge/ix/Manual/MIB/PICO-SMI-MIB.txt
+# https://jpn.nec.com/univerge/ix/Manual/MIB/PICO-SMI-ID-MIB.txt
+# https://jpn.nec.com/univerge/ix/Manual/MIB/PICO-IPSEC-FLOW-MONITOR-MIB.txt
+  nec_ix:
+    walk:
+      - interfaces
+      - ifXTable
+      - picoSystem
+      - picoIpSecFlowMonitorMIB
+      - picoExtIfMIB
+      - picoNetworkMonitorMIB
+      - picoIsdnMIB
+      - picoNgnMIB
+      - picoMobileMIB
+      - picoIPv4MIB
+      - picoIPv6MIB
+    auth:
+      community: fromPyCon
+    lookups:
+      - source_indexes: [ifIndex]
+        lookup: ifAlias
+      - source_indexes: [ifIndex]
+        lookup: ifDescr
+      - source_indexes: [ifIndex]
+        # Use OID to avoid conflict with Netscaler NS-ROOT-MIB.
+        lookup: 1.3.6.1.2.1.31.1.1.1.1 # ifName

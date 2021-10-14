@@ -1,0 +1,56 @@
+global:
+  scrape_interval:     1m
+  evaluation_interval: 5m
+
+rule_files:
+  - /etc/prometheus/alert_rules.yml
+
+alerting:
+  alertmanagers:
+  - scheme: 'http'
+    static_configs:
+    - targets: ['alertmanager:9093']
+
+scrape_configs:
+  #- job_name: "icmp"
+  #  metrics_path: /probe
+  #  params:
+  #    module: [icmp]
+  #  file_sd_configs:
+  #    - files:
+  #      - /etc/prometheus/sd_config/job_icmp.yml
+  #  relabel_configs:
+  #    - source_labels: [__address__]
+  #      target_label: __param_target
+  #    - source_labels: [__param_target]
+  #      target_label: instance
+  #    - target_label: __address__
+  #      replacement: blackbox_exporter:9115
+  # - job_name: "nec_ix"
+  #   metrics_path: /snmp
+  #   params:
+  #     module: [nec_ix]
+  #   file_sd_configs:
+  #     - files:
+  #       - /etc/prometheus/sd_config/job_nec_ix.yml
+  #   relabel_configs:
+  #     - source_labels: [__address__]
+  #       target_label: __param_target
+  #     - source_labels: [__param_target]
+  #       target_label: instance
+  #     - target_label: __address__
+  #       replacement: snmp-exporter:9116
+  - job_name: "switch"
+    metrics_path: /snmp
+    params:
+      module: [cisco]
+    file_sd_configs:
+      - files:
+        - /etc/prometheus/sd_config/job_switch.yml
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: __param_target
+      - source_labels: [__param_target]
+        target_label: instance
+      - target_label: __address__
+        replacement: snmp-exporter:9116

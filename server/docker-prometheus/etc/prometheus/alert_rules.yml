@@ -1,0 +1,45 @@
+groups:
+  #-- ===============================================================
+  #-- blackbox
+  #-- ===============================================================
+  - name: blackbox:icmp:probe_success
+    rules:
+      - alert: 'blackbox Probe icmp down'
+        expr: 'probe_success{job="icmp"} != 1'
+        for: '5m'
+        labels:
+          severity: 'critical'
+        annotations:
+          alert_level: 'critical'
+          summary: 'blackbox Probe icmp down'
+          firing_text: 'blackbox Probe icmp down'
+          resolved_text: 'blackbox Probe icmp up'
+
+  - name: blackbox:icmp:probe_duration_seconds
+    rules:
+      - alert: 'blackbox Probe timeout icmp 3s'
+        expr: 'probe_duration_seconds{job="icmp"} >= 3'
+        for: '1m'
+        labels:
+          severity: 'critical'
+        annotations:
+          alert_level: 'critical'
+          summary: 'blackbox Probe timeout icmp 3s'
+          firing_text: 'blackbox Probe timeout icmp 3s'
+          resolved_text: 'blackbox Probe timeout icmp resolved'
+
+  - name: 'snmp:ifOperStatus'
+    rules:
+      #-- =============================================================
+      #-- Alert for SNMP/Interface that is unreachable for >5 minutes.
+      #-- =============================================================
+      - alert: 'SNMP:Inerface down'
+        expr: 'ifOperStatus{ifDescr=~"Giga.*"} != 1'
+        for: '1m'
+        labels:
+          severity: 'critical'
+        annotations:
+          alert_level: 'critical'
+          summary: 'ifOperStatus !=1'
+          firing_text: '{{ $labels.ifDescr }} down'
+          resolved_text: '{{ $labels.ifDescr }} up'

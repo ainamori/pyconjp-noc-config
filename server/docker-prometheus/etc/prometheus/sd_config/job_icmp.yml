@@ -1,0 +1,32 @@
+- targets:
+    - 192.168.121.253
+  labels:
+    description: phpconf2021SW
+- targets:
+    - 192.168.121.254
+  labels:
+    description: phpconf2021RT
+- targets:
+    - 192.168.121.11
+  labels:
+    description: ATEM Television Studio HD 1
+- targets:
+    - 192.168.121.12
+  labels:
+    description: ATEM Television Studio HD 2
+- targets:
+    - 192.168.121.13
+  labels:
+    description: ATEM Television Studio HD 3
+- targets:
+    - 192.168.121.14
+  labels:
+    description: ATEM Television Studio HD 4
+- targets:
+    - 192.168.121.21
+  labels:
+    description: Mini Convertor HDMI to SDI wPSU
+- targets:
+    - 192.168.1.89
+  labels:
+    description: Aruba AP 303H

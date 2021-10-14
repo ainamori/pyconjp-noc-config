@@ -1,0 +1,36 @@
+# Title
+{{ define "slack.title" }}{{ if eq .Status "firing" }}[FIRING]{{ else }}[RESOLVED]{{ end }} {{ .GroupLabels.alertname }}{{ end }}
+
+
+# Color
+{{ define "slack.color" }}{{ if eq .Status "resolved" }}#4CAF50{{ else if eq .CommonAnnotations.alert_level "info" }}#2196F3{{ else if eq .CommonAnnotations.alert_level "warning" }}#FFEB3B{{ else }}#f44336{{ end }}{{ end }}
+
+
+# Summary
+{{ define "slack.summary" }}{{ if eq .Status "firing" }}{{ template "slack.firing_text" . }}{{ else }}{{ template "slack.resolved_text" . }}{{ end }}{{ end }}
+
+
+## FIRING
+{{ define "slack.firing_text" }}
+{{ range .Alerts }}{{ if .Labels.hostname }}
+{{ .Labels.hostname }}({{ .Labels.instance }}){{ else }}
+{{ .Labels.instance }}{{ end }} {{ .Annotations.firing_text }}{{ end }}{{ end }}
+
+
+## RESOLVED
+{{ define "slack.resolved_text" }}
+{{ range .Alerts }}{{ if .Labels.hostname }}
+{{ .Labels.hostname }}({{ .Labels.instance }}){{ else }}
+{{ .Labels.instance }}{{ end }} {{ .Annotations.resolved_text }}{{ end }}{{ end }}
+
+
+# Description
+{{ define "slack.description" }}
+{{ range .Alerts }}
+Host: {{ if .Labels.hostname }}{{ .Labels.hostname }}({{ .Labels.instance }}){{ else }}{{ .Labels.instance }}{{ end }}
+Job: {{ .Labels.job }}
+{{ if .Labels.ifDescr }}Interface: {{ .Labels.ifDescr }}{{ else }}{{ end -}}
+{{ if .Labels.bsnDot11EssSsid }}WLANs SSID: {{ .Labels.bsnDot11EssSsid }}{{ else }}{{ end -}}
+{{ if .Labels.cLRFProfileName }}RF ProfileName: {{ .Labels.cLRFProfileName }}{{ else }}{{ end }}
+{{ .Annotations.description }}
+{{ end }}{{ end }}

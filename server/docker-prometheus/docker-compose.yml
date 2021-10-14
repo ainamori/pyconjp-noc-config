@@ -1,0 +1,93 @@
+version: '3'
+services:
+  prometheus:
+    image: prom/prometheus
+    container_name: prometheus
+    volumes:
+      - ./etc/prometheus:/etc/prometheus
+      - /etc/localtime:/etc/localtime:ro
+    command: "--config.file=/etc/prometheus/prometheus.yml"
+    #networks:
+    #  - phpconf
+    ports:
+      - 9090:9090
+    restart: always
+    logging:
+      driver: syslog
+      #options:
+      #  syslog-address: "udp://10.200.200.61:514"
+      driver: "json-file" # defaults if not specified
+      options:
+        max-size: "1m"
+        max-file: "30"
+  alertmanager:
+    image: prom/alertmanager
+    container_name: alertmanager
+    volumes:
+      - ./etc/alertmanager:/etc/alertmanager
+      - /etc/localtime:/etc/localtime:ro
+    command: "--config.file=/etc/alertmanager/alertmanager.yml"
+    ports:
+      - 9093:9093
+    restart: always
+    #networks:
+    #  - phpconf
+    logging:
+      driver: "json-file" # defaults if not specified
+      options:
+        max-size: "1m"
+        max-file: "30"
+
+  snmp-exporter:
+    image: prom/snmp-exporter
+    container_name: snmp-exporter
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - ./etc/exporter/snmp.yml:/etc/snmp_exporter/snmp.yml
+    #networks:
+    #  - phpconf
+    ports:
+      - 9116:9116
+    logging:
+      #driver: syslog
+      #options:
+      #  syslog-address: "udp://10.200.200.61:514"
+      driver: "json-file" # defaults if not specified
+      options:
+        max-size: "1m"
+        max-file: "30"
+
+  blackbox_exporter:
+    image: prom/blackbox-exporter:latest
+    volumes:
+      - ./etc/exporter/blackbox_exporter_config.yml:/etc/blackbox_exporter/config.yml
+      - /etc/localtime:/etc/localtime:ro
+    #networks:
+    #  - phpconf
+    ports:
+      - 9115:9115
+
+  grafana:
+    #image: grafana/grafana
+    image: grafana/grafana:latest
+    container_name: grafana
+    volumes:
+      - ./data:/var/lib/grafana
+      - ./etc:/etc/grafana
+      - /etc/localtime:/etc/localtime:ro
+    #networks:
+    #  - phpconf
+    ports:
+      - 3000:3000
+    logging:
+      #driver: syslog
+      #options:
+      #  syslog-address: "udp://10.200.200.61:514"
+      driver: "json-file" # defaults if not specified
+      options:
+        max-size: "1m"
+        max-file: "30"
+
+networks:
+  phpconf:
+    external: true
